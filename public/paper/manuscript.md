@@ -1,375 +1,440 @@
-# Counting fixed-knot completions in the standard-eleven mosaic model
+# Complexity and Decidability Frontiers for Raw Standard-Eleven Knot-Mosaic Completion
 
 ## Abstract
 
-We study completion counting for the fixed eleven-tile
-Lomonaco--Kauffman knot-mosaic alphabet.  An input is only a finite partial
-assignment of ordinary microscopic tiles; every hole admits all eleven
-tiles.  We define a polynomially recognizable crossing-blocked exact-core
-class on which every legal one-component completion is automatically a
-planar unknot.  By a solution-bijective reduction from maximum-degree-three
-grid Hamiltonicity with marked forced edges, we prove that counting these
-raw completions is `#P`-complete under parsimonious reductions.  The proof is
-microscopic: optional corridors are Boolean, vertex cells select a unique
-degree-two mask, and completed mosaic components are exactly the cycles of a
-spanning two-factor.
+We determine the bounded complexity and part of the unbounded decidability
+frontier for completion problems in the fixed eleven-tile
+Lomonaco--Kauffman knot-mosaic model.  An input is only a finite partial seed
+of ordinary microscopic tiles; there is no board-dimension field, role
+template, macrotile alphabet, frame predicate, or parsing predicate.  We first
+prove that the seed-only bounded language `BKW11_U`, whose accepting rectangle
+has area at most $\max(1,|\operatorname{dom}s|)^2$, is NP-complete.  The reduction is a direct
+microscopic compiler from planar directed Hamiltonian cycle: optional
+corridors are Boolean, split junctions select one incoming and one outgoing
+arc, mosaic components are exactly cycle-cover cycles, and a frozen blank moat
+prevents every larger-rectangle bypass.
 
-For every fixed classical knot `J`, we then replace one forced corridor by a
-frozen two-terminal long-knot diagram of `J`.  Every legal completion becomes
-the split union of `J` with planar unknots, without changing a single free
-choice.  Counting completions of knot type `J` is therefore parsimoniously
-`#P`-complete in the raw unit-tile model.  On the same syntactic family,
-Jones-polynomial equality with `V_J`, determinant equality with `det(J)`, and
-positivity of the Jones value at `-1` select exactly the one-component
-completions and are likewise parsimoniously complete.  These are counting
-results over exponentially many completions; evaluating `V_L(-1)` for one
-diagram remains polynomial-time.
+For counting, we define a polynomially recognizable crossing-blocked exact
+core and prove that counting its one-component unknot fillings is
+parsimoniously `#P`-complete.  A second solution-bijective compiler maps
+forced-edge spanning two-factors to raw microscopic fillings with multiplicity
+one.  These bounded theorems do not classify the existentially unbounded
+language.  We prove only that the unbounded raw problem is NP-hard and
+recursively enumerable; NP membership, recursively-enumerable hardness, and
+recursively-enumerable completeness remain unestablished.
 
-We also identify the exact unrestricted boundary.  Exact-core raw unknot
-counting is `#P`-hard and belongs to `SpanP`; it belongs to `#P` if and only if
-mosaic unknot recognition belongs to `UP`.  Counting distinct blank-padded
-rectangles is zero or infinite rather than a `#P` function.  Finally, the
-guarded functions are fixed-parameter tractable by hole count and board width,
-while an FPRAS would imply `NP=RP`.
+We then isolate a decidability frontier.  The unbounded fragment with no
+frozen signed crossing is decidable and has a computable witness bound.
+General instances reduce to relative signed-tangle unknot completion.  This
+problem is recursively enumerable for every finite number of strings and
+decidable for one, two, and three strings.  It remains open for four or more
+strings.  In boundary genus at least three the hyperelliptic involutions form
+one conjugacy class; the unresolved issue is not a multiplicity of such
+classes, but whether the prescribed involution extends over the particular
+handlebody arising from an embedding, equivalently whether the branched-cover
+pair admits an equivariant embedding in the standard involutive 3-sphere.
+Finally, we record that the earlier protected-factor PF-3SAT atom/parser
+architecture was superseded for bounded hardness, not proved as originally
+stated.
 
 ## 1. Introduction
 
-Knot mosaics encode link diagrams by the eleven oriented local tiles
-introduced by Lomonaco and Kauffman.  Existing work establishes equivalence
-with tame-knot theory after stabilization, develops mosaic and tile numbers,
-enumerates small mosaics, and implements SAT/ALLSAT and modern SageMath tools.
-The question here is different: how hard is it to count completions of a
-partially frozen microscopic mosaic when the completed diagram must have one
-specified topology?
+Knot mosaics encode link diagrams by the eleven oriented local tiles of
+Lomonaco and Kauffman.  Stabilization recovers tame-knot theory, while mosaic
+number, tile number, enumeration, and SAT/ALLSAT formulations provide a
+concrete computational setting.  This paper asks a different question: given
+only finitely many frozen microscopic tiles, how hard is it to decide or count
+finite completions whose diagram is a one-component unknot?
 
-There are two traps.  First, a role-labelled macrotile reduction does not
-automatically prove a theorem about arbitrary unit-cell choices.  Second,
-unknot recognition being in `NP` does not automatically put the number of
-distinct unknot completions in `#P`: one diagram may have many accepting
-topological certificates.  Our reduction avoids both issues.  Every hole is
-a genuine unrestricted standard-eleven cell, while a local blocked-side guard
-prevents all four-port tiles.  Thus topology collapses to a deterministic
-component-count test on every input in the promised syntactic class.
+The formulation has two distinct axes that must not be conflated.  A bounded
+problem supplies a polynomial witness bound derived from the finite seed.  An
+existentially unbounded problem ranges over all finite containing rectangles.
+Likewise, a raw microscopic problem gives every hole access to all eleven
+ordinary tiles; a role-labelled or atomic-macrotile construction is a
+different input model unless a sound parser is proved.  These distinctions
+were decisive in the Knotwang audit.
 
-The hardness source is the ASP-completeness theorem of the MIT Hardness Group
-et al. for undirected maximum-degree-three grid Hamiltonicity.  ASP here is
-the solution-bijection notion, not answer-set programming.  The constructive
-proof supplies marked edges forced in every output solution.  Retaining those
-marks gives exactly the local forcing needed at a mosaic vertex while
-preserving the solution bijection.
+Our results give a complete answer for the bounded raw seed-only decision
+problem and for a natural finite-core counting problem.  They give only a
+partial answer for existentially unbounded completion.  The correct status is:
 
-The fixed-target extension is unusually clean.  A fixed long-knot tangle is
-frozen into one already-forced corridor.  Replacing it by a boundary-parallel
-arc preserves every component and every free tile choice.  With the tag
-present, precisely one planar component is tied into `J`; all others remain
-split unknots.  The result therefore covers every fixed classical knot and
-also gives genuine Jones/determinant selectors without invoking the open
-question whether the Jones polynomial detects the unknot.
+1. `BKW11_U` is NP-complete.
+2. Crossing-blocked exact-core raw counting is parsimoniously `#P`-complete.
+3. Existentially unbounded raw completion is NP-hard and recursively
+   enumerable, with no NP upper bound or r.e.-hardness theorem established.
+4. Unbounded completion is decidable when the seed freezes no signed crossing.
+5. Relative signed-tangle completion is decidable through three strings and
+   open from four strings onward.
+
+Thus the bounded program is solved, but not every Knotwang open problem is
+solved.  In particular, neither unrestricted r.e.-hardness nor unrestricted
+r.e.-completeness follows from the results here.
 
 ### Contributions
 
-1. A parsimonious `#P`-completeness theorem for raw standard-eleven
-   one-component unknot completion on a polynomially recognizable domain.
-2. A literal microscopic bijection with forced-edge spanning two-factors,
-   including polynomial area, malformed inputs, and multiplicity one.
-3. For every fixed knot `J`, a raw tagged theorem for knot type, Jones
-   equality, determinant equality, and determinant positivity.
-4. The exact `SpanP/UP` boundary for unrestricted exact-core unknot counting.
-5. A proof that literal all-rectangle counting is zero or infinite.
-6. Exact fixed-parameter algorithms and an FPRAS barrier.
+1. A direct microscopic NP-completeness theorem for a seed-only bounded
+   standard-eleven language.
+2. A frozen tile-0 firewall theorem that controls every larger containing
+   rectangle without an auxiliary frame predicate.
+3. A parsimonious `#P`-completeness theorem for a crossing-blocked exact-core
+   count.
+4. A finite-state decision procedure for the no-frozen-signed-crossing
+   unbounded fragment.
+5. A double-branched-cover formulation of the residual signed-tangle problem,
+   a decision theorem through three strings, and a precise equivariant
+   embedding open problem for four or more strings.
+6. A status-preserving crosswalk that separates the direct bounded compiler
+   from the superseded PF-3SAT atom/parser program.
 
-## 2. Related work
+## 2. Raw microscopic model
 
-Lomonaco--Kauffman introduced the fixed eleven-tile model
-([2008](https://doi.org/10.1007/s11128-008-0076-7)); Kuriya--Shehab proved its
-stable equivalence with tame knots
-([2014](https://doi.org/10.1142/S0218216514500035)).  Mosaic-number and
-enumeration foundations include Lee--Hong--Lee--Oh
-([2014](https://doi.org/10.1142/S0218216514500692)) and
-Oh--Hong--Lee--Lee
-([2015](https://doi.org/10.1007/s11128-014-0895-7)).  Miller's SAT and ALLSAT
-work ([2022](https://doi.org/10.1609/aaai.v36i11.21645),
-[2023](https://doi.org/10.1609/aaai.v37i13.27002)) is the closest direct
-computational predecessor, but does not prove fixed-knot completion hardness.
-Heap et al. provide a current low-crossing tabulation
-([2025](https://doi.org/10.2140/involve.2025.18.91)); Deng et al. provide the
-2026 KnotMosaics SageMath package ([arXiv:2605.14189](https://arxiv.org/abs/2605.14189)).
-
-Valiant introduced `#P`
-([1979](https://doi.org/10.1137/0208032)).  Köbler--Schöning--Torán introduced
-span functions, counting the distinct outputs of an NP transducer
-([1989](https://doi.org/10.1007/BF00276023)).  That is the appropriate upper
-bound when an object is guessed together with a potentially nonunique
-certificate.  Unknot recognition is in `NP` by Hass--Lagarias--Pippenger
-([1999](https://doi.org/10.1145/301970.301971)); Lackenby gives efficient
-knottedness certificates ([2021](https://doi.org/10.1016/j.aim.2021.107796)).
-Neither result supplies certificate uniqueness.
-
-The source theorem is FUN 2024, Theorem 18
-([DOI 10.4230/LIPIcs.FUN.2024.23](https://doi.org/10.4230/LIPIcs.FUN.2024.23));
-the May 2026 full revision is [arXiv:2405.08377](https://arxiv.org/abs/2405.08377).
-The latter updates authorship and puzzle applications; the proceedings result
-is the peer-reviewed hardness source.
-
-For the Jones consequences, Kauffman's state model supplies normalization
-([1987](https://doi.org/10.1016/0040-9383(87)90009-7)), and Boninger gives a
-recent direct Jones/Goeritz treatment of
-`det(K)=|V_K(-1)|`
-([2023](https://doi.org/10.1112/blms.12753)).  Our result does not contradict
-the easy evaluation at `-1`: it counts completions satisfying that predicate.
-
-No predecessor satisfying all of the following axes was located in the
-documented primary-source search through 14 August 2026: fixed standard-eleven
-library, raw partial-matrix input, exact one-component fixed-knot acceptance,
-and a parsimonious counting reduction.  This is a corpus-scoped search result,
-not an absolute priority claim.
-
-## 3. Model and finite counting convention
-
-Let `T={0,...,10}` be the oriented standard-eleven alphabet.  Tile `0` is
-blank; tiles `1,...,6` have one noncrossing arc; tiles `7,8` have two disjoint
-arcs; and `9,10` are the two crossings.  Rotations are distinct tile IDs.
-
-A seed is a canonical finite partial map
+Let
 
 \[
-  s:\mathbb N^2\rightharpoonup T
+ T=\{0,1,\ldots,10\}
 \]
 
-with nonnegative, duplicate-free coordinates.  A nonempty seed recovers
+be the oriented standard-eleven alphabet.  Tile `0` is blank; tiles `1--6`
+contain one noncrossing arc; tiles `7,8` contain two noncrossing arcs; and
+tiles `9,10` are the two signed crossings.  Rotations are distinct tile IDs.
+
+A seed is a finite partial map
 
 \[
- B_s=[0,h)\times[0,w),\quad
- h=1+\max\{r:(r,c)\in\operatorname{dom}s\},\quad
- w=1+\max\{c:(r,c)\in\operatorname{dom}s\}.
+ s:\mathbb N^2\rightharpoonup T.
 \]
 
-A witness is one row-major tile value for every hole in `B_s`.  Adjacent ports
-must match and no occupied port may leave the board.  Strand components are
-cycles of the resulting degree-two graph, keeping the two strands at a
-crossing distinct.
+A candidate chooses a finite anchored rectangle containing `dom(s)` and fills
+every unseeded cell with one tile from `T`.  It accepts exactly when adjacent
+microscopic ports match, no occupied port reaches the outer boundary, the
+diagram has exactly one component, and that component is ambient-isotopic in
+$S^3$ to the unknot.  Frozen blank entries are literal seed entries.
 
-A seed is **crossing-blocked** when:
+No role template, board dimension, macrotile library, parsing predicate,
+crossing-sign phase, or frame-validity predicate is an input or acceptance
+condition.  This raw model is strictly different from a role-template model
+in which a coordinate carries an externally imposed allowed set.
 
-1. it has no frozen crossing;
-2. every hole has a side facing the exterior or a frozen blank neighbor;
-3. `hw <= max(1,|dom(s)|)^2`;
+Define the bounded seed-only language
+
+\[
+ \mathrm{BKW11}_U=\{s:\text{some accepting containing rectangle has area at
+ most }\max(1,|\operatorname{dom}s|)^2\}.
+\]
+
+The area bound is computed from the seed; it is not a second input channel.
+The existentially unbounded language `UKW11_U` uses the same acceptance rule
+but omits the area bound.
+
+## 3. Bounded raw decision complexity
+
+### Theorem 3.1 -- bounded seed-only completeness
+
+`BKW11_U` is NP-complete under polynomial-time many-one reductions with the
+standard eleven tiles fixed and the finite seed as the only instance data.
+
+### Proof architecture
+
+The source is Plesnik's NP-complete directed Hamiltonian-cycle problem for
+planar digraphs in which every vertex has type `(1,2)` or `(2,1)`.  Split each
+source vertex `v` into an incoming junction and an outgoing junction joined by
+a forced connector.  The split graph is planar and subcubic.  A polynomial
+orthogonal-grid embedding, followed by constant scaling, isolates every
+nonincident path by at least one blank cell.
+
+Freeze each internal forced-connector cell to its unique path tile.  Leave the
+two junctions and every optional source-arc corridor unseeded.  Freeze every
+other cell to tile `0`, including a one-cell blank moat.
+
+### Lemma 3.2 -- optional corridors are Boolean
+
+An optional corridor is either entirely blank or entirely its unique path
+filling.
+
+**Proof.**  At an internal corridor cell the transverse neighbors are frozen
+blank.  The only locally compatible tiles are blank and the unique tile that
+joins predecessor to successor.  Port matching propagates that binary choice
+along the whole corridor. ∎
+
+### Lemma 3.3 -- split junctions select a cycle cover
+
+Every legal filling selects exactly one optional incoming arc at each incoming
+junction and exactly one optional outgoing arc at each outgoing junction.
+
+**Proof.**  The forced connector occupies one side.  One or two optional arcs
+occupy the available sides, and at least one remaining side faces a frozen
+blank.  Every standard tile has even occupied degree; the blank side excludes
+all four-port tiles.  Exactly one optional side must therefore be selected. ∎
+
+Lemmas 3.2 and 3.3 give a bijection between legal microscopic fillings and
+directed cycle covers of the source graph.  Following a mosaic strand follows
+one cover cycle, so mosaic components are exactly cycle-cover cycles.  A
+one-component filling therefore corresponds precisely to a directed
+Hamiltonian cycle.  Four-port tiles are blocked everywhere, so the completed
+diagram is crossing-free; a one-component completion is a Jordan curve and
+hence an unknot.
+
+### Lemma 3.4 -- the blank moat is an all-rectangle firewall
+
+Every accepting completion on every larger containing rectangle is blank
+outside the compiled core.
+
+**Proof.**  No strand crosses the frozen tile-0 moat.  Any nonblank exterior
+filling contains an additional closed component, contradicting the
+one-component acceptance rule.  Thus padding, shifted parses, alternative
+frames, and exterior loops cannot create a bypass. ∎
+
+For an inner `h x w` core, the moat contains `2h+2w+4` frozen entries and the
+canonical board has area `(h+2)(w+2)`.  Consequently
+
+\[
+ (h+2)(w+2)\leq (2h+2w+4)^2\leq |\operatorname{dom}(s)|^2.
+\]
+
+The compiler has polynomial area and its outputs meet the seed-derived bound.
+Membership in NP follows by guessing the bounded matrix, checking ports and
+components, and providing a polynomial unknot certificate.  This proves
+Theorem 3.1.
+
+## 4. Crossing-blocked exact-core counting
+
+A seed-recovered exact core is crossing-blocked when:
+
+1. no frozen tile is `9` or `10`;
+2. every hole has a side facing the exterior or a frozen tile-0 neighbor;
+3. its area is at most $\max(1,|\operatorname{dom}s|)^2$;
 4. every boundary cell is frozen blank; and
 5. at least one interior cell is frozen nonblank.
 
-Malformed and non-guarded inputs have value zero.  This makes the counting
-function total and the board polynomial in its encoding.
+Malformed or non-guarded inputs have value zero.  Let `#CB-RKW11_U(s)` count
+one-component unknot fillings of this finite recovered core.
 
-### Lemma 3.1 — guarded normal form
+### Lemma 4.1 -- guarded normal form
 
-Every suitably connected filling of a crossing-blocked seed is crossing-free.
-It is an unknot exactly when it has one strand component.
+Every legal crossing-blocked filling is crossing-free and is an unknot exactly
+when it has one strand component.
 
-**Proof.**  Every four-port tile occupies the blocked side, so tiles `7--10`
-are impossible at a hole; frozen crossings are forbidden.  A closed connected
-one-manifold embedded in the plane is a simple closed curve. ∎
+**Proof.**  Each hole has a blocked side, excluding tiles `7--10`; frozen
+crossings are forbidden.  A connected closed one-manifold embedded in the
+plane is a simple closed curve. ∎
 
-## 4. The parsimonious raw reduction
+### Theorem 4.2 -- parsimonious raw counting
 
-Define `#FGridHam_3(G,F)` to count Hamiltonian edge sets of an undirected
-maximum-degree-three grid graph `G` that contain the explicitly supplied set
-`F`, where `F` is incident to every vertex.  Invalid instances have value
-zero.  Retaining the marked black/tentacle edges in the constructive proof of
-FUN 2024, Theorem 18, and marking an arbitrary incident edge at any remaining
-degree-two vertex yields this total marked source without changing any
-solution.  It is parsimoniously `#P`-complete.
+`#CB-RKW11_U` is `#P`-complete under parsimonious reductions.
 
-Translate a connected source graph to nonnegative coordinates and scale the
-grid by four.  Freeze every internal cell of an edge in `F` to its unique path
-tile.  Leave every source vertex and every internal cell of an optional edge
-free.  Freeze all remaining cells blank and add a one-cell blank moat.  A
-connected `n`-vertex unit-grid graph has coordinate span at most `n-1`, so the
-compiled dense board has polynomial area even when source coordinates are
-binary.
-
-### Lemma 4.1 — optional corridors
-
-An optional corridor is either entirely blank or entirely its unique path
-tiles.
-
-**Proof.**  At an internal corridor cell both transverse neighbors are frozen
-blank.  Exactly two standard tiles are compatible: blank and the unique tile
-joining predecessor to successor.  Port matching propagates that Boolean
-choice along the whole corridor. ∎
-
-### Lemma 4.2 — vertex selection
-
-Every suitable filling selects exactly two source edges incident to each
-vertex and contains every edge in `F`.
-
-**Proof.**  A forced corridor occupies at least one side.  Maximum degree
-three leaves a blank-blocked side, excluding four-port tiles.  Every standard
-tile has even occupied degree, so the free vertex cell has degree exactly two;
-its two-side mask determines a unique tile. ∎
-
-### Lemma 4.3 — microscopic bijection
-
-Suitable fillings are in bijection with spanning two-factors containing `F`,
-and mosaic components are the cycles of the two-factor.
-
-**Proof.**  Lemmas 4.1--4.2 map a filling to a consistent selected edge set
-of degree two.  Conversely, a two-factor uniquely sets every corridor to
-blank or its path tile and uniquely sets each vertex tile.  The two maps are
-inverse, and strand tracing follows graph cycles. ∎
-
-### Theorem 4.4 — raw parsimonious completeness
-
-Let `#CB-RKW11_U(s)` count one-component unknot fillings of a crossing-blocked
-exact core.  Then
+**Proof.**  Start with maximum-degree-three grid Hamiltonicity together with a
+computably marked forced edge incident to every vertex.  Freeze forced edges
+as path corridors and leave optional edges and graph vertices as unrestricted
+microscopic holes.  The blocked-side condition forces each optional corridor
+to be either blank or uniquely filled and each vertex to select exactly two
+incident edges.  Therefore
 
 \[
- \#\mathrm{CB\text{-}RKW11}_U(s_{G,F})
-   =\#\mathrm{FGridHam}_3(G,F),
+ \{\text{spanning two-factors containing the forced edges}\}
+ \longleftrightarrow
+ \{\text{legal raw microscopic fillings}\}
 \]
 
-and `#CB-RKW11_U` is `#P`-complete under parsimonious reductions.
+is a bijection.  Components correspond to two-factor cycles, so
+one-component fillings correspond one-for-one to Hamiltonian cycles.  By
+Lemma 4.1 each such filling is already an unknot.  A nondeterministic machine
+guesses each hole once and checks the local rules and component count, giving
+membership in `#P` with multiplicity one. ∎
 
-**Proof.**  By Lemma 4.3, one component is exactly one two-factor cycle, hence
-a Hamiltonian cycle.  Lemma 3.1 makes it an unknot.  A `#P` machine guesses
-one four-bit code per hole, rejects codes `11--15`, and checks ports and
-components deterministically.  Each matrix has exactly one accepted code. ∎
+The theorem counts the recovered finite core, equivalently completions modulo
+exterior blank padding.  Counting every larger blank-padded rectangle as a
+distinct witness would give zero or infinitely many witnesses and would not
+define a `#P` function.
 
-## 5. Every fixed target knot
+## 5. The existentially unbounded language
 
-Fix an unoriented tame classical knot `J`.  Choose a diagram, remove a
-noncrossing subarc adjacent to the unbounded face, rectilinearize the remaining
-one-string tangle on the standard-eleven grid, and add a blank collar.  Denote
-the resulting two-terminal matrix by `T_J`.  Let `T_0` be a boundary-parallel
-arc on the same rectangle with the same two gates.  Both are constants because
-`J` is fixed.
+The bounded and unbounded languages have different upper-bound obligations.
+Removing the area bound does not preserve NP membership merely because every
+positive instance has some finite witness.
 
-A seed is **`J`-guarded** when it has one fully frozen translated copy of
-`T_J`, every frozen crossing lies in that copy, every hole has a frozen blank
-side, the area is quadratically bounded, and the outer boundary is a frozen
-blank moat.  This is recognized by scanning constant-size translated
-patterns; no knot-equivalence test occurs in the guard.
+### Theorem 5.1 -- proved unbounded classification
 
-Replace the tag by `T_0` without changing the holes.  The resulting completed
-matrix is planar and has the same components.  Therefore every suitable
-`J`-guarded completion with `k>=1` components has the complete topology
+`UKW11_U` is NP-hard and recursively enumerable.
+
+**Proof.**  NP-hardness follows from the bounded compiler: its blank moat makes
+the same reduction sound when all finite containing rectangles are allowed.
+For recursive enumerability, enumerate rectangles and tile assignments and
+run a total classical unknot-recognition algorithm on every closed
+one-component candidate. ∎
+
+### Nonclaims
+
+Theorem 5.1 does not establish any of the following:
+
+1. NP membership for arbitrary unbounded seeds;
+2. r.e.-hardness of `UKW11_U`;
+3. r.e.-completeness of `UKW11_U`; or
+4. a computable witness bound for every seed.
+
+Indeed, any reduction image with a total computable accepting-witness area
+bound is decidable.  A fixed finite firewall can establish bounded hardness,
+but cannot by itself establish r.e.-hardness for an undecidable source.
+
+## 6. A decidable unbounded fragment
+
+### Theorem 6.1 -- no-frozen-signed-crossing decidability
+
+If a seed freezes only tiles `0--8`, then existentially unbounded raw
+completion is decidable and has a computable accepting-witness bound, even
+though unseeded cells may still use tiles `9` and `10`.
+
+**Proof sketch.**  Cut at the south and east boundary of the seed's
+north-west bounding box.  Enumerate the finitely many unsigned shadow states,
+identifying the two signed crossings by their common pairing.  A shadow
+extends to one component exactly when it contains either no already closed
+component and any number of cut arcs, or exactly one closed component and no
+cut arc.  The cut arcs can be joined in an outer routing region.  Because the
+crossing signs outside the frozen seed remain free, orient the resulting
+one-component shadow and make the first traversal of every crossing the
+overpass.  The diagram is descending and hence an unknot.  Finite shadow
+enumeration therefore supplies a terminating decision algorithm and a
+computable witness bound. ∎
+
+Frozen over/under data is therefore necessary for any remaining r.e.-hardness
+route.  It is not known to be sufficient.
+
+## 7. Relative signed-tangle frontier
+
+For a general seed, finitely many internal choices reduce the unresolved part
+to a signed tangle in the seed box with exact labelled boundary stubs.  The
+question is whether a complementary tangle can attach to those same stubs and
+produce one unknot.
+
+For an `n`-string tangle `(B,T)`, let `M_T` be the double cover of `B` branched
+over `T`, equipped with its deck involution `tau_T`.  Its boundary has genus
+`n-1`.  Relative signed-tangle completion is equivalent to
 
 \[
- L(P)\cong J\sqcup U^{\sqcup(k-1)}.                 \tag{5.1}
+ (M_T,\tau_T)\ \text{embedding equivariantly in}\
+ (S^3,\text{the standard half-turn}).
 \]
 
-Indeed, the tag ties `J` into the unique planar component passing through its
-two-point ball, while the other planar components remain split unknots.
+### Theorem 7.1 -- semidecision and ordinary obstruction
 
-To compile hardness, choose the first marked forced edge, rotate the entire
-grid orientation-preservingly if needed, enlarge the constant grid scale, and
-replace that forced corridor by `T_J` and two frozen leads.  All optional
-cells and vertex cells are exactly those of the untagged reduction.  Tag
-erasure gives a component-preserving bijection with the original fillings.
+Positive relative signed-tangle instances are recursively enumerable for
+every finite `n`.  Ordinary $S^3$-embeddability of `M_T` is a decidable
+necessary condition for every `n`.
 
-### Theorem 5.1 — raw fixed-target completeness
+The first statement follows by enumerating complementary finite mosaics.  The
+second follows by constructing the branched cover effectively and applying
+the decision theorem for ordinary 3-manifold embeddability in $S^3$.
 
-For every fixed classical knot `J`, counting `J`-guarded raw standard-eleven
-fillings of knot type `J` is `#P`-complete under parsimonious reductions.
-Hardness holds with all holes initially permitting all eleven tiles and with
-only the constant number of crossings in the frozen tag.
+### Theorem 7.2 -- the one-through-three-string decision theorem
 
-**Proof.**  The source-to-filling bijection survives tag insertion.  By (5.1),
-a filling has knot type `J` exactly when its two-factor has one cycle.  For
-membership, guess each hole once and accept by deterministic local checks and
-component count; (5.1) supplies the semantic equivalence. ∎
+Relative signed-tangle unknot completion is decidable for `n=1,2,3`.
 
-### Corollary 5.2 — genuine Jones and determinant selectors
+**Proof sketch.**  Here the boundary genus is at most two.  After ordinary Fox
+re-embedding, the hyperelliptic boundary involution can be extended
+point-for-point over a complementary handlebody.  Gluing the involutions gives
+a locally linear involution of $S^3$; the Smith theorem identifies its fixed
+circle model with the standard half-turn.  Thus ordinary embeddability is also
+sufficient in these low genera, and the ordinary decision algorithm becomes a
+decision algorithm for the relative tangle problem. ∎
 
-Let `V_U(t)=1` and `delta(t)=-(t^{1/2}+t^{-1/2})`.  On every suitable
-`J`-guarded completion,
+### Open Problem 7.3 -- four or more strings
 
-\[
- V_{L(P)}(t)=\delta(t)^{k-1}V_J(t).                 \tag{5.2}
-\]
+Decide relative signed-tangle unknot completion for `n>=4`, equivalently decide
+prescribed-involution equivariant $S^3$-embeddability for the branched-cover
+pair `(M_T,tau_T)`.
 
-Consequently the following four predicates are equivalent on this family:
+When `n>=4`, the boundary genus is at least three.  There is one conjugacy
+class of hyperelliptic involutions in each such genus.  The obstruction is
+therefore not the existence of several hyperelliptic conjugacy classes.
+Rather, an ordinary embedding of `M_T` determines a particular complementary
+handlebody, and the prescribed boundary involution need not be known to extend
+over that fixed handlebody.  Existing handlebody-involution classifications
+do not give an effective search over embeddings of the prescribed interior
+pair, and ordinary embeddability forgets the deck involution entirely.
 
-1. `k=1`;
-2. `L(P)` has knot type `J`;
-3. `V_{L(P)}(t)=V_J(t)`;
-4. `|V_{L(P)}(-1)|=det(J)`; equivalently `|V_{L(P)}(-1)|>0`.
+A solution needs either a decision procedure for equivariant embedding or an
+effective bound on an invariant exterior meridian/disk system.  A naive
+normal-surface shortcut is insufficient: a spanning disk may meet the cut
+sphere in essential circles, so its intersection with the input ball can be a
+disconnected planar-surface system of unbounded apparent type.
 
-If `k>1`, (5.2) differs from `V_J` in the Laurent integral domain, and
-`delta(-1)=0`; if `k=1`, equality is immediate.  Counting completions
-satisfying any predicate is therefore parsimoniously `#P`-complete.  A
-Goeritz determinant computes the fourth predicate for one diagram in
-polynomial time.  The theorem concerns counting all completing matrices.
+## 8. Superseded protected-factor architecture
 
-## 6. Unrestricted counting and padding
+The original protected-factor program sought a PF-3SAT atom, copied-state
+network, verification-tree parser, and a global no-bypass theorem.  Several
+components of that broader program remain valid in their restricted
+role/template scope, but its literal open lemmas were not proved for raw
+microscopic placement.
 
-Let `F_raw(s)` count one-component unknot fillings of a polynomially bounded
-exact core without the crossing-blocked syntax.  It is `#P`-hard because the
-guarded instances are ordinary raw instances.  It belongs unconditionally to
-`SpanP`: an NP transducer guesses a matrix and an unknot certificate, verifies
-them, and outputs only the matrix, so different certificates for the same
-matrix are collapsed.
+The bounded compiler of Section 3 supersedes that architecture: independent
+edge variables, split junctions, and a blank firewall give raw NP-hardness
+without a PF-3SAT atom or macrotile parser.  The correct dispositions are:
 
-Moreover,
+1. the protected PF-3SAT atom is superseded for bounded raw hardness, not
+   proved as originally stated;
+2. the PF decoder/protected-coverage claim is superseded by the cycle-cover
+   decoder and blank firewall, not retroactively proved;
+3. the polynomial seed-compiler branch is proved, while the unbounded
+   r.e.-hard branch remains separate and open;
+4. verification-tree parsing and copied-state delivery are unnecessary for
+   the direct bounded reduction, not established as raw parsing theorems.
 
-\[
- F_{raw}\in\#P
- \quad\Longleftrightarrow\quad
- \mathrm{UNKNOT}_{mosaic}\in UP.                  \tag{6.1}
-\]
+This status discipline prevents a new theorem from silently reusing a failed
+or open identifier.
 
-If `F_raw` has a `#P` machine, freeze every cell of a supplied closed mosaic;
-its count is zero or one, giving an unambiguous unknot machine.  Conversely,
-combine a canonical filling guess with an unambiguous unknot verifier.
+## 9. Reproducibility and evidence boundary
 
-If each larger rectangle is a distinct witness, any accepting core extends
-by arbitrarily many blank rows and columns.  The literal all-size count is
-therefore zero or infinite.  The exact-core convention is equivalent to a
-quotient by exterior blank padding on guarded instances: the moat prevents a
-strand crossing, and any nonblank exterior produces an additional component.
+The validated artifact contains 33 completion claims: 27 proved, two proved
+with explicit premises, one finite verified regression, and three open.  The
+validator checks identifiers, dependency acyclicity, five former-open
+crosswalk entries, local links, hashes, and six committed result files
+reproduced byte-for-byte.  It passes both normally and under Python
+optimization.
 
-## 7. Algorithms and approximation boundary
+Finite computations validate the microscopic mask table, local corridor and
+junction behavior, firewall regressions, and representative compiled graphs.
+They do not replace the symbolic all-size proofs in Lemmas 3.2--3.4 and
+Theorem 4.2.  Likewise, the `n>=4` item is an explicitly open mathematical
+frontier, not a failed finite experiment.
 
-With `h` holes, exact enumeration takes `O(11^h poly(|B_s|))` time.  After
-erasing the fixed tag, a width-`w` scan stores the occupied frontier ports,
-their noncrossing connectivity, and whether a component has closed.  There
-are Catalan-many states, giving `|B_s| 2^{O(w)}` arithmetic operations.
-Hardness already holds at crossing count zero for `J=U`, at the constant tag
-crossing count for fixed `J`, and at target component count one.
+## 10. Discussion and future work
 
-A parsimonious reduction transfers any FPRAS to `#SAT`.  SAT self-reduction,
-amplification, and final witness verification then give an RP algorithm for
-SAT.  Thus an FPRAS for any guarded fixed-target count implies `NP=RP`; a
-deterministic multiplicative scheme that treats zero exactly implies `P=NP`.
-No conclusion follows for a coarse additive error scaled by all `11^h`
-assignments, and no `BPP/BQP` collapse follows.
+The most direct future problem is Open Problem 7.3: decide whether a compact
+branched-cover pair with prescribed involution embeds equivariantly in the
+standard involutive $S^3$.  The key difficulty is extension over the
+particular complementary handlebody, despite the uniqueness of the
+hyperelliptic conjugacy class on its boundary.  Useful progress could take one
+of three forms:
 
-## 8. Limitations
+1. an effective invariant disk-system bound for the complementary handlebody;
+2. an equivariant refinement of ordinary 3-manifold embeddability; or
+3. a counterexample separating ordinary from equivariant embeddability in the
+   exact branched-cover family arising from signed tangles.
 
-The theorem is total on a natural, polynomially recognizable guarded family;
-it does not establish `#P` membership for unrestricted topological
-completion.  It counts an exact recovered core or blank-padding equivalence
-class, not every padded rectangle.  It does not require or imply a macrotile
-parser.  Targets are unoriented classical knot types; framed, oriented,
-satellite, concordance, and multi-component target classifications are not
-claimed.  Jones equality is used only on the proved split-union family, not as
-a general polynomial-time predicate.
+A second frontier is complexity-theoretic: prove or refute r.e.-hardness of
+unrestricted `UKW11_U`.  Any proposed reduction must freeze essential signed
+crossing information and cannot rely on a fixed firewall with a computable
+witness bound.  A third direction is quantitative: tighten exact algorithms
+for bounded raw completion by hole count, width, or crossing number without
+conflating those finite algorithms with a classification of the unbounded
+language.
 
-## 9. Reproducibility
+The superseded PF-3SAT architecture may still motivate restricted atomic or
+role-template models, but completing it would be a separate theorem.  It is
+not a prerequisite for the bounded raw results proved here.
 
-The raw baseline regressions exhaust all local source types and several
-finite graphs.  The tagged regression replaces one forced edge of the marked
-`2x4` ladder with a literal protected trefoil tangle, recovers the two expected
-two-factors with component histogram `{1:1,2:1}`, verifies that tag erasure
-preserves both component counts, and checks determinant three on the tagged
-one-cycle example.  Corruption tests alter the tag, gate, moat, and source
-marking and must be rejected.
+## 11. Conclusion
 
-The exact commands, environment, hashes, and evidence limits are recorded in
-`08_REPRODUCIBILITY.md`.  Finite tests guard implementation details; Lemmas
-3.1 and 4.1--4.3 and the tag-erasure argument prove the unbounded statements.
-
-## References
-
-The complete bibliography, including foundational work and the 2021--2026
-search record, is in `07_REFERENCES.bib`; the theorem-by-theorem inclusion and
-exclusion matrix is `06_LITERATURE_MATRIX.csv`.
+The bounded raw standard-eleven seed-only problem has a complete microscopic
+solution: `BKW11_U` is NP-complete, and crossing-blocked exact-core counting is
+parsimoniously `#P`-complete.  The blank moat makes the bounded compiler sound
+over every larger rectangle.  The existentially unbounded problem is known to
+be NP-hard and recursively enumerable, but its NP membership, r.e.-hardness,
+and r.e.-completeness are not established.  Its no-frozen-signed-crossing
+fragment is decidable.  General completion reduces to relative signed-tangle
+completion, which is decidable through three strings and open for four or
+more.  The genus-at-least-three gap concerns extension of a prescribed
+involution over a fixed complementary handlebody and equivariant embedding,
+not multiple hyperelliptic conjugacy classes.  The earlier PF-3SAT atom/parser
+program was superseded for bounded hardness rather than proved.  These
+statements resolve the bounded objectives while preserving the remaining open
+frontier.

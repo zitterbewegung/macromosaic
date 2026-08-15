@@ -59,9 +59,7 @@ header=r'''\documentclass[11pt]{article}
 \usepackage{enumitem,xcolor,booktabs}
 \usepackage[colorlinks=true,linkcolor=black,citecolor=teal!60!black,urlcolor=teal!60!black]{hyperref}
 \setlist{nosep,leftmargin=1.5em}
-\newcommand{\SpanP}{\mathsf{SpanP}}
-\newcommand{\UP}{\mathsf{UP}}
-\title{Counting Fixed-Knot Completions in the Standard-Eleven Mosaic Model}
+\title{Complexity and Decidability Frontiers for Raw Standard-Eleven Knot-Mosaic Completion}
 \author{Anonymous Authors}
 \date{Manuscript prepared August 2026}
 \begin{document}
@@ -70,10 +68,10 @@ header=r'''\documentclass[11pt]{article}
 '''
 footer=r'''
 \section*{Data and code availability}
-The accompanying repository contains claim registries, machine-readable witnesses, independent finite regressions, and a browser-native Pyodide demonstrator. The paper distinguishes finite computational checks from the symbolic arguments proving the all-size statements.
+The accompanying repository contains the canonical audit report and claims registry, the manuscript sources, and a browser-native Pyodide demonstrator. The validated research artifact distinguishes finite computational checks from the symbolic arguments proving the all-size statements.
 \section*{Declarations}
 The authors declare no competing interests. Author identities, affiliations, funding, and acknowledgments are intentionally left blank for journal submission preparation.
-\nocite{*}
+\nocite{LomonacoKauffman2008,Plesnik1979,TamassiaTollis1989,HassLagariasPippenger1999,MITHardness2024,Fox1948,BirmanHilden1971,BirmanHilden1973,MorganBass1984,MatousekEtAl2018,NogueiraSalgueiro2022,PantaleoniPiergallini2008}
 \bibliographystyle{plain}
 \bibliography{references}
 \end{document}

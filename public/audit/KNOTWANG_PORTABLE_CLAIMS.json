@@ -1,0 +1,88 @@
+{
+  "schema": "knotwang-portable-status-v1",
+  "date": "2026-08-14",
+  "authoritative_report": "KNOTWANG_PORTABLE_FINAL_REPORT.md",
+  "model": {
+    "alphabet": "fixed oriented Lomonaco-Kauffman standard eleven",
+    "input": "finite partial seed s:N^2->{0,...,10}",
+    "candidate": "anchored finite containing rectangle",
+    "acceptance": "suitable microscopic connectivity, closed boundary, exactly one component, ambient-isotopic to the unknot",
+    "excluded_channels": [
+      "role template",
+      "dimension input",
+      "macrotile alphabet",
+      "frame predicate",
+      "parsing predicate"
+    ]
+  },
+  "claims": [
+    {
+      "id": "PORTABLE-001",
+      "status": "PROVED",
+      "statement": "The seed-only language BKW11_U with accepting area at most max(1,|dom(s)|)^2 is NP-complete."
+    },
+    {
+      "id": "PORTABLE-002",
+      "status": "PROVED",
+      "statement": "The direct compiler's microscopic fillings are bijective with directed cycle covers, and mosaic components are bijective with cover cycles."
+    },
+    {
+      "id": "PORTABLE-003",
+      "status": "PROVED",
+      "statement": "A frozen one-cell tile-0 moat makes every accepting completion on every larger rectangle blank outside the compiled core."
+    },
+    {
+      "id": "PORTABLE-004",
+      "status": "PROVED",
+      "statement": "Crossing-blocked exact-core raw counting is #P-complete under parsimonious reductions."
+    },
+    {
+      "id": "PORTABLE-005",
+      "status": "PROVED",
+      "statement": "Existentially unbounded raw seed completion is NP-hard and recursively enumerable."
+    },
+    {
+      "id": "PORTABLE-006",
+      "status": "NOT_CLAIMED",
+      "statement": "No NP upper bound is claimed for arbitrary existentially unbounded seeds."
+    },
+    {
+      "id": "PORTABLE-007",
+      "status": "PROVED",
+      "statement": "The unbounded fragment whose seeds freeze only tiles 0 through 8 is decidable and has a computable accepting-witness bound."
+    },
+    {
+      "id": "PORTABLE-008",
+      "status": "PROVED",
+      "statement": "Relative signed-tangle unknot completion is recursively enumerable for every finite string number and decidable for one, two, and three strings."
+    },
+    {
+      "id": "PORTABLE-009",
+      "status": "OPEN",
+      "statement": "Decide relative signed-tangle unknot completion, equivalently prescribed-involution S^3-embeddability, for arbitrary string number at least four."
+    },
+    {
+      "id": "PORTABLE-010",
+      "status": "OPEN",
+      "statement": "Prove or refute r.e.-hardness or r.e.-completeness of unrestricted unbounded raw standard-eleven seed completion."
+    },
+    {
+      "id": "PORTABLE-011",
+      "status": "SUPERSEDED_NOT_PROVED_AS_STATED",
+      "statement": "The original protected-factor PF-3SAT atom/parser/copy architecture is unnecessary for bounded raw NP-hardness, but its literal open lemmas were not retroactively declared proved."
+    },
+    {
+      "id": "PORTABLE-012",
+      "status": "VALIDATED",
+      "statement": "The completion validator passes normally and under Python optimization: 33 claims, five former-open crosswalk entries, and six byte-identical reproduced result files."
+    }
+  ],
+  "prohibited_overclaims": [
+    "all Knotwang variants are solved",
+    "unbounded raw completion is NP-complete",
+    "unbounded raw completion is r.e.-complete",
+    "ordinary S^3-embeddability decides every signed tangle",
+    "the original two-channel carrier can produce one component",
+    "role-template search implies unrestricted microscopic parsing"
+  ]
+}
